@@ -1,35 +1,45 @@
 import { useState } from "react";
-import { ethers, BigNumber } from "ethers";
 import { Box, Button, Flex, Input, Text } from "@chakra-ui/react";
-import roboPunksNFT from "./RoboPunksNFT.json";
+import { contract } from "./rinkebyConfig.js";
 
-const roboPunksNFTAddress = "0xE75626De849729a8d1C912dC13A145f58f71f2a4";
+
+
 
 const MainMint = ({ accounts, setAccounts }) => {
-  console.log(accounts);
+  console.log(accounts[0])
   const [mintAmount, setMintAmount] = useState(1);
   const isConnected = Boolean(accounts[0]);
+  const [metadatauri, setMetadataUri] = useState(""); 
+  // 데이터 가져 오는 함수
+  const testdata = async() => {
+    if (window.ethereum) {
+      // response는 주소를 넣으면 가지고 있는 nft metadata 반환 함수 
+    const response = await contract.getAccountToMetadata(accounts[0]);
+    console.log(response);
+      }
+  }
+  testdata()
 
+  // 메타데이터 등록 함수 ( 프로젝트 가이드라인에 맞게 작성 해야함 )
+  const randomMetadata = () => {
+    setMetadataUri("asdjfknkndkjs")
+  }
+
+
+  // 민팅실행 함수 
   async function handleMint() {
     if (window.ethereum) {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const contract = new ethers.Contract(
-        roboPunksNFTAddress,
-        roboPunksNFT.abi,
-        signer
-      );
+      // 메타 데이터 생성
+      randomMetadata()
       try {
-        const response = await contract.mint(BigNumber.from(mintAmount), {
-            value: ethers.utils.parseEther((0.0002 * mintAmount).toString()), 
-        });
+        // 현재 접속중인 계정 account, 생성된 메타데이터 uri를 mint 함수 파라미터로 전달 
+        const response = await contract.mint(accounts[0], metadatauri)
         console.log("response : ", response);
       } catch (err) {
         console.log("error : ", err);
       }
     }
   }
-
   const handleDecrement = () => {
     if (mintAmount <= 1) return;
     setMintAmount(mintAmount - 1);

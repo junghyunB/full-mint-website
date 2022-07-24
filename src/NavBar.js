@@ -7,6 +7,7 @@ import Email from "./assets/social-media-icons/email_32x32.png";
 const NavBar = ({accounts, setAccounts}) => {
     const isConnected = Boolean(accounts[0]);
 
+    // 지갑 연결 함수 
     async function connectAccount() {
         if(window.ethereum) {
             const accounts = await window.ethereum.request({
